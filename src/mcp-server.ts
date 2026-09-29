@@ -18,7 +18,20 @@ const routeInputSchema = {
     input: { description: "Optional arguments to validate against the selected capability" },
     actor: { type: "string" },
     actor_permissions: { type: "array", items: { type: "string" } },
-    candidates: { type: "array", items: { type: "object" } },
+    candidates: {
+      type: "array",
+      description:
+        "Two or more real capabilities to choose between, as {id, name, type, description}. A candidate WITH id is validated strictly: id, name, type and description must all be non-empty strings and type must be exactly one of skill, mcp_tool, cli, dsh, model, subagent (a model or agent name is not a valid type). A candidate WITHOUT id needs only name (plus description); its type is inferred as mcp_tool unless given as model or subagent. Native function-tool descriptors ({type: 'function', function: {...}}) are also accepted.",
+      items: {
+        type: "object",
+        properties: {
+          id: { type: "string", description: "Stable identifier such as worker-sonnet or claude-fable-5-1; when present, name, type and description become mandatory" },
+          name: { type: "string", description: "Exact host tool, model or subagent name" },
+          type: { type: "string", description: "One of skill, mcp_tool, cli, dsh, model, subagent: use model for a model choice and subagent for an Agent-tool subagent" },
+          description: { type: "string", description: "What this capability does, one sentence" },
+        },
+      },
+    },
   },
   required: ["request"],
   additionalProperties: false,
